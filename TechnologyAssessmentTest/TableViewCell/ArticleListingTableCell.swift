@@ -9,10 +9,19 @@
 import UIKit
 
 class ArticleListingTableCell: UITableViewCell {
-
+    
+    @IBOutlet weak var imgVw:UIImageView!
+    
+    @IBOutlet weak var lblTitle:UILabel!
+    @IBOutlet weak var lblSubtitile:UILabel!
+    @IBOutlet weak var lblDate:UILabel!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        
+        self.imgVw.layer.cornerRadius = 25.0
+        self.imgVw.layer.masksToBounds = true
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

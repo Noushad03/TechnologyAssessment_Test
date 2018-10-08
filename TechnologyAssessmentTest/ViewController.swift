@@ -2,7 +2,7 @@
 //  ViewController.swift
 //  TechnologyAssessmentTest
 //
-//  Created by clickapps on 10/8/18.
+//  Created by Noushad Shah on 10/8/18.
 //  Copyright © 2018 Noushad. All rights reserved.
 //
 

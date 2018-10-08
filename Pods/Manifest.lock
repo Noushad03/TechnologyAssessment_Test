@@ -1,0 +1,28 @@
+PODS:
+  - Alamofire (4.4.0)
+  - Kingfisher (4.9.0)
+  - ReachabilitySwift (4.1.0)
+  - SVProgressHUD (2.2.5)
+
+DEPENDENCIES:
+  - Alamofire
+  - Kingfisher (~> 4.0)
+  - ReachabilitySwift (= 4.1.0)
+  - SVProgressHUD
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - Alamofire
+    - Kingfisher
+    - ReachabilitySwift
+    - SVProgressHUD
+
+SPEC CHECKSUMS:
+  Alamofire: dc44b1600b800eb63da6a19039a0083d62a6a62d
+  Kingfisher: 64539b51826b778206daa6ed815d12653caa69dd
+  ReachabilitySwift: 6849231cd4e06559f3b9ef4a97a0a0f96d41e09f
+  SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
+
+PODFILE CHECKSUM: 74ee3966fb2653efbbceecafffe3f2ec8bffc5bd
+
+COCOAPODS: 1.5.3

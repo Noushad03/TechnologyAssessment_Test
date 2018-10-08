@@ -2,20 +2,30 @@
 //  AppDelegate.swift
 //  TechnologyAssessmentTest
 //
-//  Created by clickapps on 10/8/18.
+//  Created by Noushad Shah on 10/8/18.
 //  Copyright © 2018 Noushad. All rights reserved.
 //
 
 import UIKit
+import Reachability
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
+    public let reachability = Reachability()!
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        WebConnectConfiguration()
+            .baseUrl(baseUrl: API.kBaseUrl)
+            .debug(debug: true)
+            .timeOut(connectTimeout: 40, readTimeout: 40)
+            .config()
+        
+        self.checkInternetConnection()
+
         return true
     }
 
@@ -39,6 +49,43 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    }
+    
+    //MARK:- checkInternetConnection
+    func checkInternetConnection() {
+        
+        reachability.whenReachable = { reachability in
+            // this is called on a background thread, but UI updates must
+            // be on the main thread, like this:
+            
+            DispatchQueue.main.async {
+                if reachability.connection == .wifi {
+                    print("Reachable via WiFi")
+                } else {
+                    print("Reachable via Cellular")
+                }
+                NotificationView.shared.hideNotificationView()
+                NotificationCenter.default.post(name: Notification.Name("INTERNET_CONNECTED"), object: nil, userInfo: nil)
+                
+            }
+        }
+        reachability.whenUnreachable = { reachability in
+            // this is called on a background thread, but UI updates must
+            // be on the main thread, like this:
+            DispatchQueue.main.async {
+                print("Not reachable")
+                NotificationView.shared.showViewWithoutDismiss(with: "It seems that you are not connected to any network. Please check your network settings", ofType: NotificationMessageType.NoInternet, andDirection: 1)
+                
+                NotificationCenter.default.post(name: Notification.Name("NO_INTERNET_CONNECTIVITY"), object: nil, userInfo: nil)
+                
+            }
+        }
+        
+        do {
+            try reachability.startNotifier()
+        } catch {
+            print("Unable to start notifier")
+        }
     }
 
 

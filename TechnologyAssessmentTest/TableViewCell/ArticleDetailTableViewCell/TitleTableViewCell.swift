@@ -10,6 +10,9 @@ import UIKit
 
 class TitleTableViewCell: UITableViewCell {
 
+    @IBOutlet weak var lblTitile:UILabel!
+    @IBOutlet weak var lblDate:UILabel!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

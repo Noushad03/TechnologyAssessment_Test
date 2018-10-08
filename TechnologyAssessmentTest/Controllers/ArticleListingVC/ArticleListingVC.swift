@@ -13,14 +13,11 @@ class ArticleListingVC: UIViewController,UITableViewDelegate,UITableViewDataSour
     @IBOutlet weak var tblArticleListing:UITableView!
     
     @IBOutlet weak var lblNoRecords:UILabel!
-    
-   // var arrayArticleListing = [AllRequests]()
+    @IBOutlet weak var topNavigationView:UIView!
+
+    var arrayArticleListing = [Articles]()
     var totalCount = 0
-    var isLoadMoreCalled:Bool = false
-    var currentPageIndex = 1
-    var refreshControl: UIRefreshControl!
     
-    var isFromRefresh = false
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -28,52 +25,77 @@ class ArticleListingVC: UIViewController,UITableViewDelegate,UITableViewDataSour
         self.setupInitalSettings()
     }
     
+    //MARK:- setUpInitialSettings
     func setupInitalSettings()  {
+        
+        self.topNavigationView.layer.shadowOpacity = 0.50
+        ///self.layer.shadowOffset = CGSize.zero//CGSize(width: 0, height: 5)
+        self.topNavigationView.layer.shadowOffset = CGSize(width: -2, height: 2)
+        
+        self.topNavigationView.layer.shadowRadius = 2
+        self.topNavigationView.layer.shadowColor = UIColor.lightGray.cgColor
+        self.topNavigationView.layer.masksToBounds = false
         
         self.lblNoRecords.textColor = UIColor.black
         
         self.tblArticleListing.register(UINib.init(nibName: "ArticleListingTableCell", bundle: nil), forCellReuseIdentifier: "ArticleListingTableCell_identifire")
         self.tblArticleListing.tableFooterView = UIView.init(frame: .zero)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(showInternetConnection), name: Notification.Name("INTERNET_CONNECTED"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(noInternetConnection), name: Notification.Name("NO_INTERNET_CONNECTIVITY"), object: nil)
         
-        self.refreshControl = UIRefreshControl()
-        self.refreshControl.addTarget(self, action: #selector(requestList), for: .valueChanged)
-        self.tblArticleListing.addSubview(refreshControl)
+        self.getArticleList()
     }
     
-    @objc func requestList() {
+    //MARK:- Get Article List
+    
+    func getArticleList() {
         
-        if !App_Delegate.reachability.isReachable {
-            
-            self.refreshControl.endRefreshing()
-            return
-        }
-        
-        self.isFromRefresh = true
-        self.currentPageIndex = 1
-        self.isLoadMoreCalled = true
-       // self.getRequests( pageIndex: self.currentPageIndex, showLoader: true)
+        var param:[String:String] = Dictionary()
+        param["api-key"] = "994e78cfb18248f4af3fe07bf98891c4"
+        WebConnect.get()
+            .url(url: API.kArticleList)
+            .queryParam(queryParam: param)
+            .showCustomLoader(showLoader: true)
+            .callback { (status, response) in
+                
+                Utility.parseResponseAndReturnJsonDict(response: response, httpStatus: status, completionHandler: { (apiStatus, json) in
+                    if apiStatus == true {
+                        
+                        self.tblArticleListing.tableFooterView = UIView.init(frame: .zero)
+                        
+                        if let responseArray = json["results"] as? [AnyObject] {
+                            
+                            if responseArray.count > 0 {
+                                for dict in responseArray {
+                                    
+                                    self.arrayArticleListing.append(Articles.init(dict as! Dictionary<String, AnyObject>))
+                                }
+                                self.lblNoRecords.isHidden = true
+                                self.tblArticleListing.reloadData()
+                                return
+                            }
+                            else {
+                                
+                                self.lblNoRecords.isHidden = false
+                                self.tblArticleListing.reloadData()
+                            }
+                            
+                        }
+                    } else {
+                        //we have encountered error
+                        Utility.showNotificationOverlay(message: json["message"] as? String, controller: self, type: .Error)
+                    }
+                })
+            }.connect()
     }
     
-    @objc func showInternetConnection() {
-        self.isLoadMoreCalled = false
-    }
-    
-    @objc func noInternetConnection() {
-        
-      //  Loader.sharedManager.hideTableFooterView()
-        isLoadMoreCalled = true
-    }
-    
+    //MARK:- UITableViewDataSource
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
         return 124.0
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        return 5//self.arrayAllRequest.count
+        return self.arrayArticleListing.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -81,10 +103,24 @@ class ArticleListingVC: UIViewController,UITableViewDelegate,UITableViewDataSour
         let cell = tableView.dequeueReusableCell(withIdentifier: "ArticleListingTableCell_identifire") as? ArticleListingTableCell
         cell?.selectionStyle = .none
         
-      //  let objAllRequest = self.arrayAllRequest[indexPath.row]
-      //  cell?.lblUserName.text = objAllRequest.strClientName
+        let objArticles = self.arrayArticleListing[indexPath.row]
         
+        cell?.lblTitle.text = objArticles.strArticleTitle
+        cell?.lblSubtitile.text = objArticles.strAbstract
+        cell?.lblDate.text = objArticles.strpublished_date
+
         return cell!
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
+        
+        if let articleListingDetailsVC = storyboard.instantiateViewController(withIdentifier: "ArticleListingDetailsVC") as? ArticleListingDetailsVC {
+            
+            articleListingDetailsVC.objArticle = arrayArticleListing[indexPath.row]
+            self.navigationController?.pushViewController(articleListingDetailsVC, animated: true)
+        }
     }
 
     override func didReceiveMemoryWarning() {
