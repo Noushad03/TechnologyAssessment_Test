@@ -1,13 +1,12 @@
 # TechnologyAssessment_Test
 
-# webconnect
-**WebConnectConfiguration**
+I  implement this code test Using MVC pattern. And used WebConnect classes for the to manage API's requests.
 
 Use below code on `Appdelegate` in `didFinishLaunchingWithOptions`
 
 ```
 WebConnectConfiguration()
-.baseUrl(baseUrl: "https://reqres.in/api/")
+.baseUrl(baseUrl: "API.kBaseUrl")
 .debug(debug: true)
 .timeOut(connectTimeout: 20, readTimeout: 20)
 .config()
@@ -46,7 +45,6 @@ else {
 .loader(loader: loaderIndicator)
 .connect()
 ```
-
 `url(url: "offers")` - This is required url for the Api's apart from your baseUrl
 
 `baseUrl(baseUrl: "...")` - Optional if any specific API requires different baseUrl. `By default = that you provided in configuration`
@@ -61,167 +59,29 @@ else {
 
 -----
 
-**HTTP POST**
-```
-WebConnect.post()
-.url(url: "users")
-.header(header: ["Test": "Header"])
-.bodyParam(bodyParam: ["name":"Amit","job":"manager"])
-callback(callBack: { (status, response) in
 
-if status {
-//  print("Post response", response as Any)
-}
-else {
+After that saved the article request listing save into the `Article` Model class and shows in the table view and its details.
 
-}
-})
-.loader(loader: loaderIndicator)
-.connect()
-```
-**HTTP PUT**
-```
-WebConnect.put()
-.url(url: "users")
-.header(header: ["Test": "Header"])
-.bodyParam(bodyParam: ["name":"Amit","job":"manager"])
-callback(callBack: { (status, response) in
+**How to measure code coverage in Xcode**
 
-if status {
-//  print("Put response", response as Any)
-}
-else {
+To measure and visualize code coverage for a project, follow these steps:
 
-}
-})
-.loader(loader: loaderIndicator)
-.connect()
-```
-**HTTP PATCH**
-```
-WebConnect.patch()
-.url(url: "users/2")
-.bodyParam(bodyParam: ["name":"Amit","job":"manager"])
-.callback { (status, response) in
+- Enable code coverage date gathering. To do this, go to Product › Scheme › Edit Scheme... , and select Test from the left hand side menu. Under the Info section, check the Gather coverage data box.
 
-if status {
-print("Patch response", response as Any)
-}
-else {
+- To run all unit tests for a test target, in this case TechnologyAssessmentTest, first open the Test navigator in Xcode’s navigation pane. Then, select the small Run button next to your test target name.
 
-}
+- Now open the Report navigator in Xcode’s navigation pane, and select the Test report from the list. This should open up a list of the tests that were just run and indicate which passed and failed. In this case, they all passed.
+- To view code coverage, select the Coverage tab. Xcode will display the overall code coverage for the framework, and we can expand this to get coverage data on individual files and functions.
 
-}
-.loader(loader: loaderIndicator)
-.connect()
+**Unit test and code coverage**
 
-```
-
-**HTTP DELETE**
-```
-WebConnect.delete()
-.url(url: "users")
-.header(header: ["Test": "Header"])
-.bodyParam(bodyParam: ["name":"Amit","job":"manager"])
-.loader(loader: loaderIndicator)
-callback(callBack: { (status, response) in
-
-if status {
-//  print("Delete response", response as Any)
-}
-else {
-
-}
-})
-.connect()
-```
-
-`url(url: "offers")` - This is required url for the Api's apart from your baseUrl
-
-`baseUrl(baseUrl: "...")` - Optional if any specific API requires different baseUrl. `By default = that you provided in configuration`
-
-`header(header: ["Test": "Header"])` - Optional  you can pass the `hearder` as `Dictionary` . `By default = nil`
-
-`bodyParam(bodyParam: ["name":"Amit","job":"manager"])` - Optional method, you can put your body parameters as `dictionary` . `By default = nil`
-
-`callback(callBack: { (status, response) in })` - Optional, Using this you can get response within this method. Like above example.
-
-`loader(loader: loaderIndicator)` - Optional, if you want to show loader during hit Api's than you can set your loader.
-
-----
-
-**HTTP DOWNLOAD**
-
-```
-WebConnect.download(fileName:"bigImage.png")
-.url(url: "1024x1024-Wallpapers-010.jpg")
-.baseUrl(baseUrl: "http://res.cloudinary.com/clickapps/image/upload/v1504245457/test/")
-.callback(callBack: { (status, data) in
-
-if status {
-
-let image = UIImage(data: data as! Data)
-
-self.downLoadImage.image = image
-//print("image",image)
-}
-else {
-
-print("downloading failed")
-print("downloading failed \(data)")
-}
-
-})
-.progress(progress: { (progress) in
-
-print("Download Progress percentage = \(Int(progress * 100)) %")
-
-})
-//.connect()
-```
-`url(url: "offers")` - This is required url for the Api's apart from your baseUrl
-
-`baseUrl(baseUrl: "...")` - Optional if any specific API requires different baseUrl. `By default = that you provided in configuration`
-
-`callback(callBack: { (status, response) in })` - Optional, Using this you can get response within this method. Like above example.
-
-`loader(loader: loaderIndicator)` - Optional, if you want to show loader during hit Api's than you can set your loader.
-
--------
-**HTTP UPLOAD MULTIPART**
-
-```
-var dictProfileImage = [String:AnyObject]()
-
-dictProfileImage["data"] = UIImageJPEGRepresentation(img!, 0.5) as AnyObject?
-dictProfileImage["mimeType"] = "image/jpg" as AnyObject?
-dictProfileImage["fileName"] = "avatar_profile.jpg" as AnyObject?
-dictProfileImage["keys"] = "image" as AnyObject
-
-var arrayData = [AnyObject]()
-arrayData.append(dictProfileImage as AnyObject)
+We can explicitly enable the code coverage for the scheme by editing the scheme and tick the box `Code Coverage` from ‘Test’ action. We can filter targets as well if we don’t want to include coverage for UITests. Now that, we have enabled the code coverage for our scheme. Once we build and test this scheme using `CMD+U` button in Xcode this will generate Code coverage reports into the default derived data directory located at ~/Library/Developer/Xcode/DerivedData and you will see the code coverage reports generated at Logs/Test directory.
 
 
-WebConnect.uploadPut()
-.url(url: "put your url")
-.baseUrl(baseUrl: "put your base url")
-.bodyParam(bodyParam: params )
-.header(header: headers)
-.dataParams(dataParams: arrayData)
-.callback(callBack: { (status, response) in
-
-print("upload response", response)
-})
-.progress(progress: { (progress) in
-
-print("Download Progress percentage = \(Int(progress * 100)) %")
-
-})
-.connect()
-}
+Inside the Logs/Test directory, there is coverage report, with extension .xccovreport , and the coverage archive, with extension .xccovarchive respectively. As per man page of this utility “The coverage report contains line coverage percentages for each target, source file, and function/method that has coverage information. The coverage archive contains the raw execution counts for each file in the report”.
 
 
-```
 
-**Upcoming Features**
-1. HTTP HEAD
+
+
+
