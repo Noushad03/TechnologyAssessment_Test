@@ -23,23 +23,14 @@ WebConnectConfiguration()
 **HTTP GET**
 
 ```
-WebConnect.get()
-.url(url: "offers")
-.header(header: ["Test": "Header"])
-.queryParam(queryParam: ["name":"Hello"])
-.callback(callBack: { (status, response) in
 
+WebConnect.get()
+.url(url: API.kArticleList)
+.queryParam(queryParam: param)
+.showCustomLoader(showLoader: true)
+.callback { (status, response) in
 if status {
 print("Get response", response as Any)
-
-let jsonData = response?.data(using: .utf8)!
-let decoder = JSONDecoder()
-let modelData = try! decoder.decode(Model.self, from: jsonData!)
-print("page = \(modelData.page)")
-}
-else {
-
-}
 
 })
 .loader(loader: loaderIndicator)
@@ -48,8 +39,6 @@ else {
 `url(url: "offers")` - This is required url for the Api's apart from your baseUrl
 
 `baseUrl(baseUrl: "...")` - Optional if any specific API requires different baseUrl. `By default = that you provided in configuration`
-
-`header(header: ["Test": "Header"])` - Optional  you can pass the `hearder` as `Dictionary` . `By default = nil`
 
 `queryParam(queryParam: ["name":"Hello"])` - Optional method, you can put your `query parameters` as `dictionary`. `By default = nil`
 
